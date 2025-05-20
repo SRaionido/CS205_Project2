@@ -17,7 +17,7 @@ data = np.array(data)
 print(data.shape)
 print(data[0:5, :])
 
-def feature_search(data):
+def Feature_Search(data):
     # To Be Added
     pass
 
