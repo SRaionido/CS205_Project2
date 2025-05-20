@@ -17,3 +17,17 @@ data = np.array(data)
 print(data.shape)
 print(data[0:5, :])
 
+def feature_search(data):
+    # To Be Added
+    pass
+
+def Cross_Validate(data, current_set, feature_to_add):
+    # To Be Added
+    pass
+
+def main():
+    # To Be Added
+    return
+
+if __name__ == "__main__":
+    main()
