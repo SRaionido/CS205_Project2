@@ -61,13 +61,35 @@ def Feature_Search(data):
     pass
 
 def Cross_Validate(data, current_set, feature_to_add):
-    # To Be Added
-    # Placeholder for cross-validation logic
-    return random.random()
+    # To Be Added    
+    # This function should return the accuracy of the model with the current feature set and the new feature added via leave-one-out cross-validation
+    
+
+    set_to_test = current_set.copy()
+    set_to_test.append(feature_to_add)
+
+    labels = data[:, 0]
+    features = data[:, set_to_test]
+    print("Features to test are ", features)
+    print("Labels to test are ", labels)
+
+    # Here you would implement the logic for leave-one-out cross-validation
+    # Do leave one out and find nearest neighbor
+
+    
+
+    # return random.random()
+    # return
 
 def main():
     # IN PROGRESS
-    Feature_Search(data)
+    # Feature_Search(data)
+
+    # Testing the Cross_Validate function
+    current_set = [1, 2]
+    feature_to_add = 3
+    acc = Cross_Validate(data, current_set, feature_to_add)
+    print("Accuracy of the model with features", current_set, "and feature", feature_to_add, "is", acc)
     return
 
 if __name__ == "__main__":
