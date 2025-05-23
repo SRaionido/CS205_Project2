@@ -16,8 +16,8 @@ for line in f:
 f.close()
 data = np.array(data)
 # print(data)
-print(data.shape)
-print(data[0:5, :])
+# print(data.shape)
+# print(data[0:5, :])
 
 num_features = data.shape[1] - 1
 num_samples = data.shape[0]
@@ -39,14 +39,17 @@ def Feature_Search(data):
     best_feature_set = []
 
     for i in range(num_features):
-        print("In level " + str(i+1) + " of tree")
+        # print("In level " + str(i+1) + " of tree")
         feature_to_add = -1
         best_acc_so_far = 0
         for k in range(num_features):
             if k in current_feature_set:
                 continue
-            print("- - - Considering feature", k)
+            # print("- - - Considering feature", k)
             acc = Cross_Validate(data, current_feature_set, k+1)
+            set_just_tested = current_feature_set.copy()
+            set_just_tested.append(k+1)
+            print ("Using features", set_just_tested, "accuracy is", acc)
 
             if acc > best_acc_so_far or feature_to_add == -1:
                 best_acc_so_far = acc
@@ -56,18 +59,14 @@ def Feature_Search(data):
             best_total_acc = best_acc_so_far
             current_feature_set.append(feature_to_add)
             best_feature_set = current_feature_set.copy()
-            print("Best feature set so far in the whole test is ", best_feature_set)
-            print("Best accuracy so far in the whole test is ", best_total_acc)
+            print("\nFeature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
         else:
             current_feature_set.append(feature_to_add)
-            print("This level does not improve the accuracy")
-            print("Best feature to add is", feature_to_add)
-            print("Best accuracy so far is", best_acc_so_far)
+            print("\n(Warning, accuracy has decreased! Continuing search in case of local maxima)")
+            print("Feature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
 
-    print("\n\nBest feature set is ", best_feature_set)
-    print("Best accuracy is ", best_total_acc)
-
-    pass
+    print("\nFinished search, best feature set is", best_feature_set, "with accuracy", best_total_acc)
+    return
 
 def Cross_Validate(data, current_set, feature_to_add):
     # To Be Added    
