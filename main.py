@@ -1,5 +1,6 @@
 import numpy as np
 import random
+import math
 
 input_file = 'CS205_small_Data__33.txt'
 
@@ -23,6 +24,14 @@ num_samples = data.shape[0]
 
 def Feature_Search(data):
     # IN PROGRESS
+
+    print ("This dataset has", num_features, "features (not including the class attribute), with", num_samples, "instances.\n")
+
+    set_with_all_features = []
+    for i in range(num_features):
+        set_with_all_features.append(i+1)
+
+    print("Running nearest neighbor with all " + str(num_features) + " features, using leave-one-out evaluation, I get an accuracy of", Cross_Validate(data, set_with_all_features, 1), "\n")
     print("Beginning Search\n")
 
     current_feature_set = []
@@ -37,7 +46,7 @@ def Feature_Search(data):
             if k in current_feature_set:
                 continue
             print("- - - Considering feature", k)
-            acc = Cross_Validate(data, current_feature_set, k)
+            acc = Cross_Validate(data, current_feature_set, k+1)
 
             if acc > best_acc_so_far or feature_to_add == -1:
                 best_acc_so_far = acc
@@ -70,26 +79,51 @@ def Cross_Validate(data, current_set, feature_to_add):
 
     labels = data[:, 0]
     features = data[:, set_to_test]
-    print("Features to test are ", features)
-    print("Labels to test are ", labels)
+    # print("Features to test are ", features)
+    # print("Labels to test are ", labels)
 
     # Here you would implement the logic for leave-one-out cross-validation
-    # Do leave one out and find nearest neighbor
+    # Do leave one out and find nearest neighbor by euclidean distance
+
+    accuracy = 0
+
+    for i in range(num_samples):
+        # Leave one out
+        test_sample = features[i]
+        train_samples = np.delete(features, i, axis=0)
+        train_labels = np.delete(labels, i, axis=0)
+        nearest_label = None
+        nearest_distance = float('inf')
+        # Find nearest neighbor
+        # Calculate the distance between the test sample and all training samples by euclidean distance
+        for j in range(len(train_samples)):
+            distance = math.sqrt(np.sum((test_sample - train_samples[j]) ** 2))
+            if distance < nearest_distance:
+                nearest_distance = distance
+                nearest_label = train_labels[j]
+
+        # Check if the predicted label is correct
+        if nearest_label == labels[i]:
+            accuracy += 1
+
+    # Calculate the accuracy
+    accuracy /= num_samples
+    # print("Accuracy is ", accuracy)
 
     
 
     # return random.random()
-    # return
+    return accuracy
 
 def main():
     # IN PROGRESS
-    # Feature_Search(data)
+    Feature_Search(data)
 
     # Testing the Cross_Validate function
-    current_set = [1, 2]
-    feature_to_add = 3
-    acc = Cross_Validate(data, current_set, feature_to_add)
-    print("Accuracy of the model with features", current_set, "and feature", feature_to_add, "is", acc)
+    # current_set = [1, 2]
+    # feature_to_add = 3
+    # acc = Cross_Validate(data, current_set, feature_to_add)
+    # print("Accuracy of the model with features", current_set, "and feature", feature_to_add, "is", acc)
     return
 
 if __name__ == "__main__":
