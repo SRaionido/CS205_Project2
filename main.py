@@ -2,28 +2,30 @@ import numpy as np
 import random
 import math
 
-input_file = 'CS205_small_Data__33.txt'
+# input_file = 'CS205_small_Data__33.txt'
 
-f = open(input_file, 'r')
+# f = open(input_file, 'r')
 
-data = []
+# data = []
 
-for line in f:
-    line = line.strip()
-    columns = line.split()
-    data.append([float(x) for x in columns])
+# for line in f:
+#     line = line.strip()
+#     columns = line.split()
+#     data.append([float(x) for x in columns])
 
-f.close()
-data = np.array(data)
-# print(data)
-# print(data.shape)
-# print(data[0:5, :])
+# f.close()
+# data = np.array(data)
+# # print(data)
+# # print(data.shape)
+# # print(data[0:5, :])
 
-num_features = data.shape[1] - 1
-num_samples = data.shape[0]
+# num_features = data.shape[1] - 1
+# num_samples = data.shape[0]
 
-def Feature_Search(data):
+def Feature_Search_Forward(data):
     # IN PROGRESS
+    num_features = data.shape[1] - 1
+    num_samples = data.shape[0]
 
     print ("This dataset has", num_features, "features (not including the class attribute), with", num_samples, "instances.\n")
 
@@ -69,6 +71,8 @@ def Feature_Search(data):
     return
 
 def Cross_Validate(data, current_set, feature_to_add):
+    num_features = data.shape[1] - 1
+    num_samples = data.shape[0]
     # To Be Added    
     # This function should return the accuracy of the model with the current feature set and the new feature added via leave-one-out cross-validation
     
@@ -116,7 +120,19 @@ def Cross_Validate(data, current_set, feature_to_add):
 
 def main():
     # IN PROGRESS
-    Feature_Search(data)
+    print("Welcome to Steven Ryan Leonido's Feature Search Algorithm.")
+    print("Type the name of the file to test: ")
+    data = []
+    input_file = input()
+    f = open(input_file, 'r')
+    for line in f:
+        line = line.strip()
+        columns = line.split()
+        data.append([float(x) for x in columns])
+
+    f.close()
+    data = np.array(data)
+    Feature_Search_Forward(data)
 
     # Testing the Cross_Validate function
     # current_set = [1, 2]
