@@ -27,7 +27,7 @@ def Feature_Search_Forward(data):
     num_features = data.shape[1] - 1
     num_samples = data.shape[0]
 
-    print ("This dataset has", num_features, "features (not including the class attribute), with", num_samples, "instances.\n")
+    print ("\nThis dataset has", num_features, "features (not including the class attribute), with", num_samples, "instances.\n")
 
     set_with_all_features = []
     for i in range(num_features):
@@ -122,8 +122,8 @@ def main():
     # IN PROGRESS
     print("Welcome to Steven Ryan Leonido's Feature Search Algorithm.")
     print("Type the name of the file to test: ")
-    data = []
     input_file = input()
+    data = []
     f = open(input_file, 'r')
     for line in f:
         line = line.strip()
@@ -132,7 +132,15 @@ def main():
 
     f.close()
     data = np.array(data)
-    Feature_Search_Forward(data)
+    print("Type the number of the algorithm you want to run.\n\n   1.Forward Selection\n   2.Backward Elimination\n    ")
+    choice = input()
+    if choice == '1':
+        Feature_Search_Forward(data)
+    elif choice == '2':
+        print("Running Backward Elimination")
+    else:
+        print("Invalid choice, exiting.")
+        return
 
     # Testing the Cross_Validate function
     # current_set = [1, 2]
