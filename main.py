@@ -51,7 +51,7 @@ def Feature_Search_Forward(data):
             acc = Cross_Validate(data, current_feature_set, k+1)
             set_just_tested = current_feature_set.copy()
             set_just_tested.append(k+1)
-            print ("Using features", set_just_tested, "accuracy is", acc)
+            print ("     Using features", set_just_tested, "accuracy is", acc)
 
             if acc > best_acc_so_far or feature_to_add == -1:
                 best_acc_so_far = acc
@@ -64,6 +64,53 @@ def Feature_Search_Forward(data):
             print("\nFeature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
         else:
             current_feature_set.append(feature_to_add)
+            print("\n(Warning, accuracy has decreased! Continuing search in case of local maxima)")
+            print("Feature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
+
+    print("\nFinished search, best feature set is", best_feature_set, "with accuracy", best_total_acc)
+    return
+
+def Feature_Search_Backward(data):
+    # IN PROGRESS
+    num_features = data.shape[1] - 1
+    num_samples = data.shape[0]
+
+    print ("\nThis dataset has", num_features, "features (not including the class attribute), with", num_samples, "instances.\n")
+
+    set_with_all_features = []
+    for i in range(num_features):
+        set_with_all_features.append(i+1)
+
+    print("Running nearest neighbor with all " + str(num_features) + " features, using leave-one-out evaluation, I get an accuracy of", Cross_Validate(data, set_with_all_features, 1), "\n")
+    print("Beginning Search\n")
+
+    current_feature_set = set_with_all_features.copy()
+    best_total_acc = Cross_Validate(data, current_feature_set, 1)
+    best_feature_set = current_feature_set.copy()
+
+    for i in range(num_features):
+        # print("In level " + str(i+1) + " of tree")
+        feature_to_remove = -1
+        best_acc_so_far = 0
+        for k in range(num_features):
+            if k+1 not in current_feature_set:
+                continue
+            # print("- - - Considering feature", k)
+            acc = Cross_Validate_Leave_One_Out(data, current_feature_set, k+1)
+            set_just_tested = current_feature_set.copy()
+            set_just_tested.remove(k+1)
+            print ("     Using features", set_just_tested, "accuracy is", acc)
+
+            if acc > best_acc_so_far or feature_to_remove == -1:
+                best_acc_so_far = acc
+                feature_to_remove = k
+
+        if best_acc_so_far > best_total_acc:
+            best_total_acc = best_acc_so_far
+            current_feature_set.remove(feature_to_remove+1)
+            best_feature_set = current_feature_set.copy()
+            print("\nFeature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
+        else:
             print("\n(Warning, accuracy has decreased! Continuing search in case of local maxima)")
             print("Feature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
 
@@ -112,11 +159,44 @@ def Cross_Validate(data, current_set, feature_to_add):
     # Calculate the accuracy
     accuracy /= num_samples
     # print("Accuracy is ", accuracy)
-
-    
-
     # return random.random()
     return accuracy
+
+def Cross_Validate_Leave_One_Out(data, current_set, feature_to_remove):
+    # This function should return the accuracy of the model with the current feature set and the new feature removed via leave-one-out cross-validation
+    num_features = data.shape[1] - 1
+    num_samples = data.shape[0]
+
+    set_to_test = current_set.copy()
+    set_to_test.remove(feature_to_remove)
+    labels = data[:, 0]
+    features = data[:, set_to_test]
+
+    accuracy = 0
+
+    for i in range(num_samples):
+        # Leave one out
+        test_sample = features[i]
+        train_samples = np.delete(features, i, axis=0)
+        train_labels = np.delete(labels, i, axis=0)
+        nearest_label = None
+        nearest_distance = float('inf')
+        # Find nearest neighbor
+        # Calculate the distance between the test sample and all training samples by euclidean distance
+        for j in range(len(train_samples)):
+            distance = math.sqrt(np.sum((test_sample - train_samples[j]) ** 2))
+            if distance < nearest_distance:
+                nearest_distance = distance
+                nearest_label = train_labels[j]
+
+        # Check if the predicted label is correct
+        if nearest_label == labels[i]:
+            accuracy += 1
+
+    # Calculate the accuracy
+    accuracy /= num_samples
+    return accuracy
+    
 
 def main():
     # IN PROGRESS
@@ -137,7 +217,7 @@ def main():
     if choice == '1':
         Feature_Search_Forward(data)
     elif choice == '2':
-        print("Running Backward Elimination")
+        Feature_Search_Backward(data)
     else:
         print("Invalid choice, exiting.")
         return
