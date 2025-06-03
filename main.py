@@ -1,26 +1,21 @@
 import numpy as np
 import random
 import math
+import csv
 
 # input_file = 'CS205_small_Data__33.txt'
 
-# f = open(input_file, 'r')
-
-# data = []
-
-# for line in f:
-#     line = line.strip()
-#     columns = line.split()
-#     data.append([float(x) for x in columns])
-
-# f.close()
-# data = np.array(data)
-# # print(data)
-# # print(data.shape)
-# # print(data[0:5, :])
-
-# num_features = data.shape[1] - 1
-# num_samples = data.shape[0]
+# Custom function to load custom data for CS205 Project 2: Breast Cancer Wisconsin (Diagnostic) Data Set
+def load_data_custom(filename):
+    data = []
+    with open(filename, 'r') as f:
+        for row in csv.reader(f):
+            if not row:
+                continue
+            label = 1 if row[1] == 'M' else 0
+            features = list(map(float, row[2:]))
+            data.append([label] + features)
+    return np.array(data)
 
 def Feature_Search_Forward(data):
     # IN PROGRESS
@@ -33,7 +28,7 @@ def Feature_Search_Forward(data):
     for i in range(num_features):
         set_with_all_features.append(i+1)
 
-    print("Running nearest neighbor with all " + str(num_features) + " features, using leave-one-out evaluation, I get an accuracy of", Cross_Validate(data, set_with_all_features, 1), "\n")
+    print("Running nearest neighbor with all " + str(num_features) + " features, using leave-one-out evaluation, I get an accuracy of", round(Cross_Validate(data, set_with_all_features, 1)*100,1), "%\n")
     print("Beginning Search\n")
 
     current_feature_set = []
@@ -51,7 +46,7 @@ def Feature_Search_Forward(data):
             acc = Cross_Validate(data, current_feature_set, k+1)
             set_just_tested = current_feature_set.copy()
             set_just_tested.append(k+1)
-            print ("     Using features", set_just_tested, "accuracy is", acc)
+            print ("     Using features", set_just_tested, "accuracy is", round(acc*100,1), "%")
 
             if acc > best_acc_so_far or feature_to_add == -1:
                 best_acc_so_far = acc
@@ -61,13 +56,13 @@ def Feature_Search_Forward(data):
             best_total_acc = best_acc_so_far
             current_feature_set.append(feature_to_add)
             best_feature_set = current_feature_set.copy()
-            print("\nFeature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
+            print("\nFeature set", current_feature_set, "was best, accuracy is", round(best_acc_so_far*100,1), "%\n")
         else:
             current_feature_set.append(feature_to_add)
             print("\n(Warning, accuracy has decreased! Continuing search in case of local maxima)")
-            print("Feature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
+            print("Feature set", current_feature_set, "was best, accuracy is", round(best_acc_so_far*100,1), "%\n")
 
-    print("\nFinished search, best feature set is", best_feature_set, "with accuracy", best_total_acc)
+    print("\nFinished search, best feature set is", best_feature_set, "with accuracy", round(best_total_acc*100,1), "%")
     return
 
 def Feature_Search_Backward(data):
@@ -81,7 +76,7 @@ def Feature_Search_Backward(data):
     for i in range(num_features):
         set_with_all_features.append(i+1)
 
-    print("Running nearest neighbor with all " + str(num_features) + " features, using leave-one-out evaluation, I get an accuracy of", Cross_Validate(data, set_with_all_features, 1), "\n")
+    print("Running nearest neighbor with all " + str(num_features) + " features, using leave-one-out evaluation, I get an accuracy of", round(Cross_Validate(data, set_with_all_features, 1)*100,1), "%\n")
     print("Beginning Search\n")
 
     current_feature_set = set_with_all_features.copy()
@@ -99,7 +94,7 @@ def Feature_Search_Backward(data):
             acc = Cross_Validate_Leave_One_Out(data, current_feature_set, k+1)
             set_just_tested = current_feature_set.copy()
             set_just_tested.remove(k+1)
-            print ("     Using features", set_just_tested, "accuracy is", acc)
+            print ("     Using features", set_just_tested, "accuracy is", round(acc*100,1), "%")
 
             if acc > best_acc_so_far or feature_to_remove == -1:
                 best_acc_so_far = acc
@@ -109,12 +104,12 @@ def Feature_Search_Backward(data):
             best_total_acc = best_acc_so_far
             current_feature_set.remove(feature_to_remove+1)
             best_feature_set = current_feature_set.copy()
-            print("\nFeature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
+            print("\nFeature set", current_feature_set, "was best, accuracy is", round(best_acc_so_far*100,1), "%\n")
         else:
             print("\n(Warning, accuracy has decreased! Continuing search in case of local maxima)")
-            print("Feature set", current_feature_set, "was best, accuracy is", best_acc_so_far, "\n")
+            print("Feature set", current_feature_set, "was best, accuracy is", round(best_acc_so_far*100,1), "%\n")
 
-    print("\nFinished search, best feature set is", best_feature_set, "with accuracy", best_total_acc)
+    print("\nFinished search, best feature set is", best_feature_set, "with accuracy", round(best_total_acc*100,1), "%")
     return
 
 def Cross_Validate(data, current_set, feature_to_add):
@@ -203,15 +198,19 @@ def main():
     print("Welcome to Steven Ryan Leonido's Feature Search Algorithm.")
     print("Type the name of the file to test: ")
     input_file = input()
-    data = []
-    f = open(input_file, 'r')
-    for line in f:
-        line = line.strip()
-        columns = line.split()
-        data.append([float(x) for x in columns])
+    if input_file == 'wdbc.txt':
+        data = load_data_custom(input_file)
+        print(data[:5])  # Print first 5 rows for verification
+    else:
+        data = []
+        f = open(input_file, 'r')
+        for line in f:
+            line = line.strip()
+            columns = line.split()
+            data.append([float(x) for x in columns])
 
-    f.close()
-    data = np.array(data)
+        f.close()
+        data = np.array(data)
     print("Type the number of the algorithm you want to run.\n\n   1.Forward Selection\n   2.Backward Elimination\n    ")
     choice = input()
     if choice == '1':
