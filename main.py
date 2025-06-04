@@ -40,7 +40,7 @@ def Feature_Search_Forward(data):
         feature_to_add = -1
         best_acc_so_far = 0
         for k in range(num_features):
-            if k in current_feature_set:
+            if k+1 in current_feature_set:
                 continue
             # print("- - - Considering feature", k)
             acc = Cross_Validate(data, current_feature_set, k+1)
@@ -50,7 +50,7 @@ def Feature_Search_Forward(data):
 
             if acc > best_acc_so_far or feature_to_add == -1:
                 best_acc_so_far = acc
-                feature_to_add = k
+                feature_to_add = k+1
 
         if best_acc_so_far > best_total_acc:
             best_total_acc = best_acc_so_far
@@ -83,7 +83,7 @@ def Feature_Search_Backward(data):
     best_total_acc = Cross_Validate(data, current_feature_set, 1)
     best_feature_set = current_feature_set.copy()
 
-    for i in range(num_features):
+    for i in range(num_features-1):
         # print("In level " + str(i+1) + " of tree")
         feature_to_remove = -1
         best_acc_so_far = 0
@@ -106,6 +106,7 @@ def Feature_Search_Backward(data):
             best_feature_set = current_feature_set.copy()
             print("\nFeature set", current_feature_set, "was best, accuracy is", round(best_acc_so_far*100,1), "%\n")
         else:
+            current_feature_set.remove(feature_to_remove+1)
             print("\n(Warning, accuracy has decreased! Continuing search in case of local maxima)")
             print("Feature set", current_feature_set, "was best, accuracy is", round(best_acc_so_far*100,1), "%\n")
 
