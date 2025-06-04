@@ -201,7 +201,7 @@ def main():
     input_file = input()
     if input_file == 'wdbc.txt':
         data = load_data_custom(input_file)
-        print(data[:5])  # Print first 5 rows for verification
+        # print(data[:5])  # Print first 5 rows for verification
     else:
         data = []
         f = open(input_file, 'r')
